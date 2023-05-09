@@ -20,15 +20,16 @@ print(df.head())
 
 embeddings_df = pd.DataFrame()
 embeddings_df['param'] = df['target_param']
+embeddings_df['label'] = df["not_written_to"]
 #for testing_only grabbing top 1k
 embeddings_df = embeddings_df.head(1000)
 #tokenizing
 encoding = tiktoken.get_encoding(embedding_encoding)
-
+print(len(embeddings_df.index))
 def get_embedding(text, model="text-embedding-ada-002"):
    text = text.replace("\n", " ")
    return openai.Embedding.create(input = [text], model=model)['data'][0]['embedding']
 
 # This may take a few minutes
 embeddings_df["embedding"] = embeddings_df['param'].apply(lambda x: get_embedding(x, model=embedding_model))
-embeddings_df.to_csv("nobu-data/s23-thesis-paper/test_0_lkf_param_embeddings.csv")
+embeddings_df.to_csv("../../nobu-data/s23-thesis-paper/test1k_0_lkf_param_embeddings.csv")

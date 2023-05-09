@@ -1,7 +1,7 @@
 import pandas as pd
 import tqdm
 
-input_datapath = "../../nobu-data/s23-thesis-paper/labeled_body_shuffled_ds_0.csv" 
+input_datapath = "../../nobu-data/s23-thesis-paper/labeled_body_shuffled_ds_1.csv" 
 df = pd.read_csv(input_datapath, index_col=0)
 print(df.head())
 target_params = []
@@ -23,12 +23,12 @@ df['parameter_index'] = param_index
 for i in range(10):
     df = df.drop(["a" + str(i)], axis=1)
 
-#TODO: figure out whether or not to drop in_macro
-# print(df['in_macro'].head())
+#drop in_macro
+df = df.drop(['in_macro'], axis=1)
 
 #rename column titles 
-df = df.rename(columns={"file": "filename", "label_time": "label_duration" })
+df = df.rename(columns={"file": "filename", "label_time": "label_duration", "immutable":"not_written_to" })
 
 print(df.head())
 
-df.to_csv("../../nobu-data/s23-thesis-paper/0_lkernel_params_mutable.csv")
+df.to_csv("../../nobu-data/s23-thesis-paper/1_lkernel_params_mutable.csv")
