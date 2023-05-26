@@ -9,7 +9,10 @@ from sklearn.metrics import classification_report
 filepath = "../../nobu-data/s23-thesis-paper/test1k_0_lkf_param_embeddings.csv"
 
 def label_score(review_embedding, label_embeddings):
-            return cosine_similarity(review_embedding, label_embeddings[1]) - cosine_similarity(review_embedding, label_embeddings[0])
+    review_embedding = review_embedding[1:-1]
+    review_embedding_array = review_embedding.split(",")
+    review_embedding_array = list(map(float, review_embedding_array))
+    return cosine_similarity(review_embedding_array, label_embeddings[1]) - cosine_similarity(review_embedding_array, label_embeddings[0])
 
 def zero_shot_class(data_filepath):
     openai.api_key = os.getenv("S23PARAML")
@@ -21,10 +24,13 @@ def zero_shot_class(data_filepath):
     label_embeddings = [get_embedding(label, engine="text-embedding-ada-002") for label in ["True", "False"]]
 
     #probas = df["embedding"].apply(lambda x: label_score(x, label_embeddings))
-    probas = []
-    for embedding in list(df.embedding.values):
-            probas.append(label_score(embedding, label_embeddings))
-    preds = probas.apply(lambda x: 'True' if x>0 else 'False')
+    embeddings_list = list(df.embedding.values)
+    probas_list = []
+    for embedding in embeddings_list:
+            probas_list.append(label_score(embedding, label_embeddings))
+    probas = pd.DataFrame({'probs': probas_list})
+    print(probas)
+    preds = probas.apply(lambda x: x>0)
 
     report = classification_report(df.label, preds)
     print(report)
